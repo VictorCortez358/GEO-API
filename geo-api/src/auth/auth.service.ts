@@ -84,7 +84,7 @@ export class AuthService {
         const newUser = await this.usersService.createUser(user);
 
         if(newUser){
-            return 'User created successfully';
+            return JSON.stringify({ message: 'User created successfully'});
         }{
             throw new Error('Error creating user');
         }

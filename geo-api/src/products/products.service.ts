@@ -73,12 +73,13 @@ export class ProductsService {
     }
   }
   
-  // In this method, it's used a raw query to get the product and its geometry because Prisma does not support geometry types yet.
-  async findProductInRadiusByCategoriaAndName(lat: number, long: number, radius: number, category_id?: number, name?: string) {
-    // Create a point with the lat and long provided by the user.
+  
+
+  async findProductInRadiusByCategoriaAndName(lat: number, long: number, radius: number, category_id?: string, name?: string) {
     const point = `POINT(${long} ${lat})`;
     // Convert the radius in meters to degrees.
     const radiusInDegrees = radius / 111320; 
+    const like_name = `%${name}%`
 
     // In this case we are using a Prisma.sql template literal to create the query. because we need to 
     // add conditions to the query based on the parameters provided by the user.
@@ -95,17 +96,19 @@ export class ProductsService {
       )
     `;
 
+
     if (category_id !== undefined) {
-        query = Prisma.sql`${query} AND category_id = ${category_id}`;
+        const category_id_number = parseInt(category_id);
+        query = Prisma.sql`${query} AND category_id = ${category_id_number}`;
     }
     if (name !== undefined) {
-        query = Prisma.sql`${query} AND name = ${name}`;
+        query = Prisma.sql`${query} AND name like ${like_name}`;
     }
 
     const products = await this.prismaService.$queryRaw<Product[]>(query);
   
     if (!products.length) {
-      return "No hay productos en el radio proporcionado";
+      return [];
     } else {
       return products;
     }

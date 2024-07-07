@@ -144,13 +144,12 @@ export class ProductsController {
     @Query('category_id') category_id: string,
     @Query('name') name: string,
   ) {
-    const category_id_number = parseInt(category_id);
 
     return this.productsService.findProductInRadiusByCategoriaAndName(
       lat,
       long,
       radius,
-      category_id_number,
+      category_id,
       name,
     );
   }

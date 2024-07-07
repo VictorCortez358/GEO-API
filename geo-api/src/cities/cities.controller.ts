@@ -1,7 +1,6 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 import { CitiesService } from './cities.service';
-import { AuthGuard } from 'src/auth/auth.guard';
 
 @ApiTags('cities')
 @ApiBearerAuth()
@@ -9,7 +8,6 @@ import { AuthGuard } from 'src/auth/auth.guard';
 export class CitiesController {
   constructor(private readonly citiesService: CitiesService) {}
 
-  @UseGuards(AuthGuard)
   @Get()
   @ApiOperation({ summary: 'Obtener lista de ciudades' })
   @ApiResponse({ status: 200, description: 'Lista de ciudades devuelta exitosamente.' })
@@ -18,7 +16,6 @@ export class CitiesController {
     return this.citiesService.findAll();
   }
 
-  @UseGuards(AuthGuard)
   @Get(':id')
   @ApiOperation({ summary: 'Obtener una ciudad por ID' })
   @ApiParam({ name: 'id', description: 'ID de la ciudad', type: String })
