@@ -3,7 +3,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from '.prisma/client';
 
-
 @Injectable()
 export class UsersService {
   constructor(private prismaService: PrismaService) {}
@@ -16,7 +15,7 @@ export class UsersService {
     });
   }
 
-  
+  // This method is used to find a user by email
   async findOneUserByEmail(email: string): Promise<User | null> {
     return this.prismaService.user.findUnique({
       where: {
@@ -25,6 +24,7 @@ export class UsersService {
     });
   }
 
+  // This method is used to update the password of a user
   async updatePassword(id: string, newPassword: string) {
     return this.prismaService.user.update({
         where: { id },
@@ -42,6 +42,7 @@ export class UsersService {
   }
   
   // This metodo only can be used by the ADMIN
+  // In this method, it's used a raw query to get the user and its products because Prisma does not support geometry types yet.
   async findOneUser(id: string, role: string): Promise<User | null> {
     if (role !== 'ADMIN') {
       throw new Error('You are not authorized to perform this action');

@@ -2,11 +2,13 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// Prisma Schema 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+// Define data models by annotating them with the @model directive
 model User {
   id        String    @id @default(uuid())
   cityId    String

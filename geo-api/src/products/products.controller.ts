@@ -12,7 +12,7 @@ import {
   UploadedFile,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth, ApiBody, ApiQuery, ApiConsumes } from '@nestjs/swagger';
-import {ProductsService } from './products.service';
+import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -24,59 +24,60 @@ import { ConvertedProductDto } from './dto/converterd-product.dto';
 @ApiBearerAuth()
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(private readonly productsService: ProductsService) { }
 
+  // In this endpoint, use a interceptor to upload the image of the product.
   @Post('/addProduct')
-@UseGuards(AuthGuard)
-@ApiOperation({ summary: 'Crear un nuevo producto' })
-@ApiConsumes('multipart/form-data')
-@ApiBody({
-  type: CreateProductDto,
-  schema: {
-    type: 'object',
-    properties: {
-      category_id: { type: 'string' },
-      city_id: { type: 'string' },
-      state_id: { type: 'string' },
-      description: { type: 'string' },
-      name: { type: 'string' },
-      price: { type: 'string' },
-      sale_radius: { type: 'string' },
-      lat: { type: 'string' },
-      long: { type: 'string' },
-      image: {
-        type: 'string',
-        format: 'binary',
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Crear un nuevo producto' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: CreateProductDto,
+    schema: {
+      type: 'object',
+      properties: {
+        category_id: { type: 'string' },
+        city_id: { type: 'string' },
+        state_id: { type: 'string' },
+        description: { type: 'string' },
+        name: { type: 'string' },
+        price: { type: 'string' },
+        sale_radius: { type: 'string' },
+        lat: { type: 'string' },
+        long: { type: 'string' },
+        image: {
+          type: 'string',
+          format: 'binary',
+        },
       },
     },
-  },
-})
-@ApiResponse({ status: 201, description: 'Producto creado exitosamente.' })
-@ApiResponse({ status: 403, description: 'Prohibido.' })
-@UseInterceptors(FileInterceptor('image_url', { storage }))
-async createProduct(
-  @Body() createProductDto: CreateProductDto,
-  @UploadedFile() file: Express.Multer.File,
-  @Req() req
-) {
-  const userId = req.user.sub;
-  const imagePath = file.path;
+  })
+  @ApiResponse({ status: 201, description: 'Producto creado exitosamente.' })
+  @ApiResponse({ status: 403, description: 'Prohibido.' })
+  @UseInterceptors(FileInterceptor('image_url', { storage }))
+  async createProduct(
+    @Body() createProductDto: CreateProductDto,
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req
+  ) {
+    const userId = req.user.sub;
+    const imagePath = file.path;
 
-  // Convertir campos a sus tipos correspondientes
-  const convertedProductDto: ConvertedProductDto = {
-    category_id: parseInt(createProductDto.category_id, 10),
-    city_id: createProductDto.city_id,  // UUID remains a string
-    state_id: parseInt(createProductDto.state_id, 10),
-    description: createProductDto.description,
-    name: createProductDto.name,
-    price: parseFloat(createProductDto.price),
-    sale_radius: parseInt(createProductDto.sale_radius, 10),
-    lat: parseFloat(createProductDto.lat),
-    long: parseFloat(createProductDto.long),
-  };
+    // Convertir campos a sus tipos correspondientes
+    const convertedProductDto: ConvertedProductDto = {
+      category_id: parseInt(createProductDto.category_id, 10),
+      city_id: createProductDto.city_id,  // UUID remains a string
+      state_id: parseInt(createProductDto.state_id, 10),
+      description: createProductDto.description,
+      name: createProductDto.name,
+      price: parseFloat(createProductDto.price),
+      sale_radius: parseInt(createProductDto.sale_radius, 10),
+      lat: parseFloat(createProductDto.lat),
+      long: parseFloat(createProductDto.long),
+    };
 
-  return this.productsService.createProduct(convertedProductDto, userId, imagePath);
-}
+    return this.productsService.createProduct(convertedProductDto, userId, imagePath);
+  }
 
   @UseGuards(AuthGuard)
   @Get()

@@ -10,6 +10,7 @@ export class StatesService {
     return states;
   }
 
+  // In this method, it's used a raw query to get the state and its products because Prisma does not support geometry types yet.
   async findOneState(id: number) {
     const state = await this.prismaService.$queryRaw`
       SELECT 

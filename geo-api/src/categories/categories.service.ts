@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Category } from '.prisma/client';
 
 @Injectable()
 export class CategoriesService {
@@ -11,6 +10,8 @@ export class CategoriesService {
     return await this.prismaService.category.findMany();
   }
 
+  // In this method, it's used a raw query to get the category and its products because Prisma does not support geometry types yet.
+  // The ST_AsText function is used to convert the sale_point column to a string.
   async findOneCategory(id: number) {
     const category = await this.prismaService.$queryRaw`
       SELECT 
