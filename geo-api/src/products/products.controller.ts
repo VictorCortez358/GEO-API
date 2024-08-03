@@ -11,7 +11,7 @@ import {
   UseInterceptors,
   UploadedFile,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth, ApiBody, ApiQuery, ApiConsumes } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth, ApiBody, ApiQuery, ApiConsumes, ApiHeader } from '@nestjs/swagger';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -21,7 +21,7 @@ import { ConvertedProductDto } from './dto/converterd-product.dto';
 
 
 @ApiTags('products')
-@ApiBearerAuth()
+@ApiBearerAuth('token')
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) { }
@@ -31,27 +31,6 @@ export class ProductsController {
   @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Crear un nuevo producto' })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    type: CreateProductDto,
-    schema: {
-      type: 'object',
-      properties: {
-        category_id: { type: 'string' },
-        city_id: { type: 'string' },
-        state_id: { type: 'string' },
-        description: { type: 'string' },
-        name: { type: 'string' },
-        price: { type: 'string' },
-        sale_radius: { type: 'string' },
-        lat: { type: 'string' },
-        long: { type: 'string' },
-        image: {
-          type: 'string',
-          format: 'binary',
-        },
-      },
-    },
-  })
   @ApiResponse({ status: 201, description: 'Producto creado exitosamente.' })
   @ApiResponse({ status: 403, description: 'Prohibido.' })
   @UseInterceptors(FileInterceptor('image_url', { storage }))
@@ -101,7 +80,7 @@ export class ProductsController {
 
   @UseGuards(AuthGuard)
   @Delete('/id/:id')
-  @ApiOperation({ summary: 'Eliminar un producto por ID' })
+  @ApiOperation({ summary: 'Eliminar un producto por ID solo el ADMIN puede eliminar productos' })
   @ApiParam({ name: 'id', description: 'ID del producto', type: String })
   @ApiResponse({ status: 200, description: 'Producto eliminado exitosamente.' })
   @ApiResponse({ status: 403, description: 'Prohibido.' })
@@ -114,9 +93,9 @@ export class ProductsController {
   @UseGuards(AuthGuard)
   @Get('/findProductInRadius')
   @ApiOperation({ summary: 'Buscar productos en un radio' })
-  @ApiQuery({ name: 'lat', description: 'Latitud', type: Number })
-  @ApiQuery({ name: 'long', description: 'Longitud', type: Number })
-  @ApiQuery({ name: 'radius', description: 'Radio', type: Number })
+  @ApiQuery({ name: 'lat', description: 'Latitud', type: Number, example: 13.676777231174462 })
+  @ApiQuery({ name: 'long', description: 'Longitud', type: Number, example: -89.29584689328458 })
+  @ApiQuery({ name: 'radius', description: 'Radio', type: Number, example: 1000 })
   @ApiResponse({ status: 200, description: 'Productos encontrados en el radio especificado.' })
   @ApiResponse({ status: 403, description: 'Prohibido.' })
   findProductInRadius(
@@ -130,11 +109,11 @@ export class ProductsController {
   @UseGuards(AuthGuard)
   @Get('/findProductInRadiusByCategoriaAndName')
   @ApiOperation({ summary: 'Buscar productos en un radio por categoría y nombre' })
-  @ApiQuery({ name: 'lat', description: 'Latitud', type: Number })
-  @ApiQuery({ name: 'long', description: 'Longitud', type: Number })
-  @ApiQuery({ name: 'radius', description: 'Radio', type: Number })
-  @ApiQuery({ name: 'category_id', description: 'ID de la categoría', type: String })
-  @ApiQuery({ name: 'name', description: 'Nombre del producto', type: String })
+  @ApiQuery({ name: 'lat', description: 'Latitud', type: Number, example: 13.676777231174462 })
+  @ApiQuery({ name: 'long', description: 'Longitud', type: Number, example: -89.29584689328458 })
+  @ApiQuery({ name: 'radius', description: 'Radio', type: Number, example: 1000 })
+  @ApiQuery({ name: 'category_id', description: 'ID de la categoría', type: String, example: '1' })
+  @ApiQuery({ name: 'name', description: 'Nombre del producto', type: String, example: 'Producto 2' })
   @ApiResponse({ status: 200, description: 'Productos encontrados en el radio especificado por categoría y nombre.' })
   @ApiResponse({ status: 403, description: 'Prohibido.' })
   findProductInRadiusByCategoriaAndName(

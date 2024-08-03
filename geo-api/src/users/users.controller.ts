@@ -1,17 +1,17 @@
 import { Controller, Get, Param, UseGuards, Req, Delete } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 
 @ApiTags('users')
-@ApiBearerAuth()
+@ApiBearerAuth('token')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @UseGuards(AuthGuard)
   @Get()
-  @ApiOperation({ summary: 'Obtener lista de usuarios' })
+  @ApiOperation({ summary: 'Obtener lista de usuarios solo si el usuario es administrador' })
   @ApiResponse({ status: 200, description: 'Lista de usuarios devuelta exitosamente.' })
   @ApiResponse({ status: 403, description: 'Prohibido.' })
   findAll(@Req() req) {
@@ -21,7 +21,7 @@ export class UsersController {
 
   @UseGuards(AuthGuard)
   @Get(':id')
-  @ApiOperation({ summary: 'Obtener un usuario por ID' })
+  @ApiOperation({ summary: 'Obtener un usuario por ID solo si el usuario es administrador' })
   @ApiParam({ name: 'id', description: 'ID del usuario', type: String })
   @ApiResponse({ status: 200, description: 'Usuario devuelto exitosamente.' })
   @ApiResponse({ status: 403, description: 'Prohibido.' })
@@ -33,7 +33,7 @@ export class UsersController {
 
   @UseGuards(AuthGuard)
   @Delete(':id')
-  @ApiOperation({ summary: 'Eliminar un usuario por ID' })
+  @ApiOperation({ summary: 'Eliminar un usuario por ID solo si el usuario es administrador' })
   @ApiParam({ name: 'id', description: 'ID del usuario', type: String })
   @ApiResponse({ status: 200, description: 'Usuario eliminado exitosamente.' })
   @ApiResponse({ status: 403, description: 'Prohibido.' })

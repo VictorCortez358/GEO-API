@@ -32,7 +32,7 @@ export class ProductsService {
   
   async findAllProducts() {
     const products = await this.prismaService.$queryRaw`
-      SELECT id, category_id, city_id, state_id, user_id, description, price, image_url, ST_AsText(sale_point), sale_radius FROM "Product"
+      SELECT id, category_id, city_id, name, state_id, user_id, description, price, image_url, ST_AsText(sale_point), sale_radius FROM "Product"
     `;
     return products;
   }
@@ -40,7 +40,7 @@ export class ProductsService {
   // In this method, it's used a raw query to get the product and its geometry because Prisma does not support geometry types yet.
   async findOneProduct(id: string) {
     const product = await this.prismaService.$queryRaw`
-      SELECT id, category_id, city_id, state_id, user_id, description, price, image_url, ST_AsText(sale_point), sale_radius FROM "Product" WHERE id = ${id}
+      SELECT id, category_id, city_id, name, state_id, user_id, description, price, image_url, ST_AsText(sale_point), sale_radius FROM "Product" WHERE id = ${id}
     `;
     return product[0];
   }
@@ -56,7 +56,7 @@ export class ProductsService {
     // ST_DWithin function returns true if the distance between the two geometries is less than or equal to the distance provided.
     // And use ST_SetSRID to set the SRID of the point to 4326.
     const products = await this.prismaService.$queryRaw<Product[]>`
-      SELECT id, category_id, city_id, state_id, user_id, description, price, image_url, ST_AsText(sale_point) AS sale_point, sale_radius
+      SELECT id, category_id, name, city_id, state_id, user_id, description, price, image_url, ST_AsText(sale_point) AS sale_point, sale_radius
       FROM "Product"
       WHERE ST_DWithin(
         sale_point, 
@@ -87,7 +87,7 @@ export class ProductsService {
     // Equivalent to findProductInRadius method used a ST_DWithin function to get the products in the radius provided by the user.
     // and use ST_SetSRID to set the SRID of the point to 4326.
     let query = Prisma.sql`
-      SELECT id, category_id, city_id, state_id, user_id, name, description, price, image_url, ST_AsText(sale_point) AS sale_point, sale_radius
+      SELECT id, category_id, city_id, state_id, name, user_id, name, description, price, image_url, ST_AsText(sale_point) AS sale_point, sale_radius
       FROM "Product"
       WHERE ST_DWithin(
         sale_point, 

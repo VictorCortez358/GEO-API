@@ -1,8 +1,10 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiProperty } from '@nestjs/swagger';
 import { SignInDto } from './dto/sign-in-dto';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { ForgotPasswordDto } from './dto/forgot-password';
+import { RestorePasswordDto } from 'src/users/dto/restore-password.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -32,7 +34,11 @@ export class AuthController {
     @ApiOperation({ summary: 'Recuperar contraseña' })
     @ApiResponse({ status: 200, description: 'Correo de recuperación enviado.' })
     @ApiResponse({ status: 404, description: 'Correo no encontrado.' })
-    forgotPassword(@Body() body: { email: string }) {
+    @ApiProperty({
+        description: 'Correo electrónico del usuario',
+        example: 'user1@gmail.com'
+    })
+    forgotPassword(@Body() body: ForgotPasswordDto) {
         return this.authService.ForgotPassword(body.email);
     }
 
@@ -41,7 +47,7 @@ export class AuthController {
     @ApiOperation({ summary: 'Restaurar contraseña' })
     @ApiResponse({ status: 200, description: 'Contraseña restaurada exitosamente.' })
     @ApiResponse({ status: 400, description: 'Código de restauración inválido.' })
-    restorePassword(@Body() body: { email: string, code: string, newPassword: string }) {
+    restorePassword(@Body() body: RestorePasswordDto) {
         return this.authService.restorePassword(body.email, body.code, body.newPassword);
     }
 }

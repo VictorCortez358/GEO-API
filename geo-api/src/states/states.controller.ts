@@ -1,15 +1,12 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 import { StatesService } from './states.service';
-import { AuthGuard } from 'src/auth/auth.guard';
 
 @ApiTags('states')
-@ApiBearerAuth()
 @Controller('states')
 export class StatesController {
   constructor(private readonly statesService: StatesService) {}
 
-  @UseGuards(AuthGuard)
   @Get()
   @ApiOperation({ summary: 'Obtener lista de estados' })
   @ApiResponse({ status: 200, description: 'Lista de estados devuelta exitosamente.' })
@@ -18,7 +15,6 @@ export class StatesController {
     return this.statesService.findAllStates();
   }
 
-  @UseGuards(AuthGuard)
   @Get(':id')
   @ApiOperation({ summary: 'Obtener un estado por ID' })
   @ApiParam({ name: 'id', description: 'ID del estado', type: String })

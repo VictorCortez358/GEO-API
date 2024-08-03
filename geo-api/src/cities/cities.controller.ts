@@ -3,7 +3,6 @@ import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@ne
 import { CitiesService } from './cities.service';
 
 @ApiTags('cities')
-@ApiBearerAuth()
 @Controller('cities')
 export class CitiesController {
   constructor(private readonly citiesService: CitiesService) {}
